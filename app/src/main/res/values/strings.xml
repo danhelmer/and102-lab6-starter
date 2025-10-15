@@ -2,4 +2,6 @@
     <string name="app_name">Parks and Campgrounds</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="menu_parks">Parks</string>
+    <string name="menu_campgrounds">Campgrounds</string>
 </resources>

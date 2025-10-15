@@ -14,25 +14,32 @@ import okhttp3.Headers
 import org.json.JSONException
 import kotlin.let
 
-private const val TAG = "CampgroundFragment"
+private const val TAG = "ParksFragment"
 private const val API_KEY = "nQd1MQQwVQ4RXJE0i3aQEfjJcKMEQFNhbclDBP64"
-private const val CAMPGROUND_URL =
-    "https://developer.nps.gov/api/v1/campgrounds?api_key=${API_KEY}"
+private const val PARKS_URL =
+    "https://developer.nps.gov/api/v1/parks?api_key=${API_KEY}"
+// TODO: Rename parameter arguments, choose names that match
+// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+
 
 /**
  * A simple [Fragment] subclass.
- * Use the [CampgroundFragment.newInstance] factory method to
+ * Use the [ParksFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class CampgroundFragment : Fragment() {
-
-    private val campgrounds = mutableListOf<Campground>()
-    private lateinit var campgroundsRecyclerView: RecyclerView
-    private lateinit var campgroundAdapter: CampgroundAdapter
+class ParksFragment : Fragment() {
+    // TODO: Rename and change types of parameters
+    private val parks = mutableListOf<Park>()
+    private lateinit var parksRecyclerView: RecyclerView
+    private lateinit var parksAdapter: ParksAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+    }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        fetchParks()
     }
 
     override fun onCreateView(
@@ -40,55 +47,56 @@ class CampgroundFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Change this statement to store the view in a variable instead of a return statement
-        val view = inflater.inflate(R.layout.fragment_campground, container, false)
+        val view = inflater.inflate(R.layout.fragment_parks, container, false)
 
         // Add these configurations for the recyclerView and to configure the adapter
         val layoutManager = LinearLayoutManager(context)
-        campgroundsRecyclerView = view.findViewById(R.id.campground_recycler_view)
-        campgroundsRecyclerView.layoutManager = layoutManager
-        campgroundsRecyclerView.setHasFixedSize(true)
-        campgroundAdapter = CampgroundAdapter(view.context, campgrounds)
-        campgroundsRecyclerView.adapter = campgroundAdapter
-
-        fetchCampgrounds()
+        parksRecyclerView = view.findViewById(R.id.parks)
+        parksRecyclerView.layoutManager = layoutManager
+        parksRecyclerView.setHasFixedSize(true)
+        parksAdapter = ParksAdapter(view.context, parks)
+        parksRecyclerView.adapter = parksAdapter
 
         // Update the return statement to return the inflated view from above
         return view
     }
 
+
     companion object {
-        fun newInstance(): CampgroundFragment {
-            return CampgroundFragment()
+        fun newInstance(): ParksFragment {
+            return ParksFragment()
         }
     }
-
-    private fun fetchCampgrounds() {
+    private fun fetchParks() {
         val client = AsyncHttpClient()
-        client.get(CAMPGROUND_URL, object : JsonHttpResponseHandler() {
+        client.get(PARKS_URL, object : JsonHttpResponseHandler() {
             override fun onFailure(
                 statusCode: Int,
                 headers: Headers?,
                 response: String?,
                 throwable: Throwable?
             ) {
-                Log.e(TAG, "Failed to fetch campgrounds: $statusCode")
+                Log.e(TAG, "Failed to fetch parks: $statusCode")
             }
 
-            override fun onSuccess(statusCode: Int, headers: Headers, json: JSON) {
-                Log.i(TAG, "Successfully fetched campgrounds: $json")
+            override fun onSuccess(statusCode: Int, headers: Headers, json: JsonHttpResponseHandler.JSON) {
+                Log.i(TAG, "Successfully fetched parks: $json")
                 try {
                     val parsedJson = createJson().decodeFromString(
-                        CampgroundResponse.serializer(),
+                        ParksResponse.serializer(),
                         json.jsonObject.toString()
                     )
                     parsedJson.data?.let { list ->
-                        campgrounds.addAll(list)
-                        campgroundAdapter.notifyDataSetChanged()
+                        parks.addAll(list)
+                        parksAdapter.notifyDataSetChanged()
                     }
                 } catch (e: JSONException) {
                     Log.e(TAG, "Exception: $e")
                 }
             }
+
+
+
         })
     }
 }
